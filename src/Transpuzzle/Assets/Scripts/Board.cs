@@ -8,5 +8,5 @@ public class Board : MonoBehaviour
 	public Level level;
 	public GameObject tilePrefab;
 
-	public PieceType[,] grid;
+	public PieceType[] grid;
 }

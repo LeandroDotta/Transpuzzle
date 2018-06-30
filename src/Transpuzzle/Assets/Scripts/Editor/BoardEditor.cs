@@ -60,23 +60,27 @@ public class BoardEditor : Editor
         if (board.level == null || board.level.pieces == null || board.level.pieces.Length == 0)
             return;
 
-        board.grid = new PieceType[board.level.pieces.GetLength(0), board.level.pieces.GetLength(1)];
+        board.grid = new PieceType[board.level.size.x * board.level.size.y];
 
-        for (int x = 0; x < board.level.pieces.GetLength(0); x++)
+        for (int row = 0; row < board.level.size.x; row++)
         {
-            for (int y = 0; y < board.level.pieces.GetLength(1); y++)
+            for (int col = 0; col < board.level.size.y; col++)
             {
-                PieceType item = board.level.pieces[x, y];
+                int index = col * board.level.size.x + row;
+                PieceType item = board.level.pieces[index];
 
                 Vector2 boardPosition = board.transform.position;
-                Vector2 tilePosition = new Vector2(boardPosition.x + x, boardPosition.y - y);
+                Vector2 tilePosition = new Vector2(boardPosition.x + row, boardPosition.y - col);
 
                 GameObject tile = PrefabUtility.InstantiatePrefab(board.tilePrefab) as GameObject;
                 tile.transform.position = tilePosition;
                 tile.transform.SetParent(board.transform);
-                SetPiece(item, ref tile);
+                Tile t = tile.GetComponent<Tile>();
+                SetPiece(item, ref t);
+                t.gridIndex = index;
+                
 
-				board.grid[x, y] = item;
+				board.grid[index] = item;
             }
         }
     }
@@ -91,35 +95,33 @@ public class BoardEditor : Editor
     }
 
 	// Atribui uma peça a um tile
-    private void SetPiece(PieceType type, ref GameObject tile)
+    private void SetPiece(PieceType type, ref Tile tile)
     {
-        Tile t = tile.GetComponent<Tile>();
-
         switch (type)
         {
             case PieceType.Empty:
-                t.SetPiece(pieceEmpty);
+                tile.SetPiece(pieceEmpty);
                 break;
             case PieceType.Start:
-                t.SetPiece(pieceStart);
+                tile.SetPiece(pieceStart);
                 break;
             case PieceType.End:
-                t.SetPiece(pieceEnd);
+                tile.SetPiece(pieceEnd);
                 break;
             case PieceType.Straight:
-                t.SetPiece(pieceStraight);
+                tile.SetPiece(pieceStraight);
                 break;
             case PieceType.Turn:
-                t.SetPiece(pieceTurn);
+                tile.SetPiece(pieceTurn);
                 break;
             case PieceType.Intersection:
-                t.SetPiece(pieceIntersection);
+                tile.SetPiece(pieceIntersection);
                 break;
             case PieceType.Bridge:
-                t.SetPiece(pieceBridge);
+                tile.SetPiece(pieceBridge);
                 break;
             case PieceType.BridgeBase:
-                t.SetPiece(pieceBridgeBase);
+                tile.SetPiece(pieceBridgeBase);
                 break;
         }
     }
