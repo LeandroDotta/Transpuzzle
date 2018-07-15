@@ -37,14 +37,14 @@ public class BoardEditor : Editor
                 allPieces.Add(AssetDatabase.LoadAssetAtPath<Piece>(path));
             }
 
-            pieceEmpty = allPieces.Where(p => p.type == PieceType.Empty).First();
-            pieceStart = allPieces.Where(p => p.type == PieceType.Start).First();
-            pieceEnd = allPieces.Where(p => p.type == PieceType.End).First();
-            pieceStraight = allPieces.Where(p => p.type == PieceType.Straight).First();
-            pieceTurn = allPieces.Where(p => p.type == PieceType.Turn).First();
-            pieceIntersection = allPieces.Where(p => p.type == PieceType.Intersection).First();
-            pieceBridge = allPieces.Where(p => p.type == PieceType.Bridge).First();
-            pieceBridgeBase = allPieces.Where(p => p.type == PieceType.BridgeBase).First();
+            // pieceEmpty = allPieces.Where(p => p.type == PieceType.Empty).First();
+            // pieceStart = allPieces.Where(p => p.type == PieceType.Start).First();
+            // pieceEnd = allPieces.Where(p => p.type == PieceType.End).First();
+            // pieceStraight = allPieces.Where(p => p.type == PieceType.Straight).First();
+            // pieceTurn = allPieces.Where(p => p.type == PieceType.Turn).First();
+            // pieceIntersection = allPieces.Where(p => p.type == PieceType.Intersection).First();
+            // pieceBridge = allPieces.Where(p => p.type == PieceType.Bridge).First();
+            // pieceBridgeBase = allPieces.Where(p => p.type == PieceType.BridgeBase).First();
         }
 
         if (GUILayout.Button("Render Board"))
@@ -60,27 +60,28 @@ public class BoardEditor : Editor
         if (board.level == null || board.level.pieces == null || board.level.pieces.Length == 0)
             return;
 
-        board.grid = new PieceType[board.level.size.x * board.level.size.y];
+        board.grid = new Tile[board.level.size.x * board.level.size.y];
+        float boardScale = board.transform.localScale.x;
 
         for (int row = 0; row < board.level.size.x; row++)
         {
             for (int col = 0; col < board.level.size.y; col++)
             {
                 int index = col * board.level.size.x + row;
-                PieceType item = board.level.pieces[index];
+                Piece piece = GetPiece(board.level.pieces[index]);
 
-                Vector2 boardPosition = board.transform.position;
-                Vector2 tilePosition = new Vector2(boardPosition.x + row, boardPosition.y - col);
+                Vector3 boardPosition = board.transform.position;
+                Vector3 tilePosition = new Vector3(boardPosition.x + (row * boardScale), boardPosition.y, boardPosition.z - (col * boardScale));
 
-                GameObject tile = PrefabUtility.InstantiatePrefab(board.tilePrefab) as GameObject;
-                tile.transform.position = tilePosition;
-                tile.transform.SetParent(board.transform);
-                Tile t = tile.GetComponent<Tile>();
-                SetPiece(item, ref t);
-                t.gridIndex = index;
+                GameObject tileObj = PrefabUtility.InstantiatePrefab(piece.tilePrefab) as GameObject;
+                tileObj.transform.SetParent(board.transform);
+                tileObj.transform.position = tilePosition;
                 
-
-				board.grid[index] = item;
+                tileObj.transform.localScale = Vector3.one;
+                Tile tile = tileObj.GetComponent<Tile>();
+                tile.gridIndex = index;
+                
+				board.grid[index] = tile;
             }
         }
     }
@@ -94,35 +95,8 @@ public class BoardEditor : Editor
         }
     }
 
-	// Atribui uma peça a um tile
-    private void SetPiece(PieceType type, ref Tile tile)
+    private Piece GetPiece(PieceType type)
     {
-        switch (type)
-        {
-            case PieceType.Empty:
-                tile.SetPiece(pieceEmpty);
-                break;
-            case PieceType.Start:
-                tile.SetPiece(pieceStart);
-                break;
-            case PieceType.End:
-                tile.SetPiece(pieceEnd);
-                break;
-            case PieceType.Straight:
-                tile.SetPiece(pieceStraight);
-                break;
-            case PieceType.Turn:
-                tile.SetPiece(pieceTurn);
-                break;
-            case PieceType.Intersection:
-                tile.SetPiece(pieceIntersection);
-                break;
-            case PieceType.Bridge:
-                tile.SetPiece(pieceBridge);
-                break;
-            case PieceType.BridgeBase:
-                tile.SetPiece(pieceBridgeBase);
-                break;
-        }
+        return allPieces.Where(p => p.type == type).First();
     }
 }

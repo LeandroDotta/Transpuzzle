@@ -16,4 +16,4 @@ MonoBehaviour:
   connection2: 1
   connection3: 0
   connection4: 1
-  sprite: {fileID: 21300000, guid: b2112e3cfdeefa04b9dc898b74c04357, type: 3}
+  tilePrefab: {fileID: 1809207708825106, guid: f7c563fdc48db6a4aa04451f1d303bea, type: 2}

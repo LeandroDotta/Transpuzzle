@@ -18,5 +18,5 @@ public class Piece : ScriptableObject
 	public bool connection3;
 	public bool connection4;
 
-	public Sprite sprite;
+	public GameObject tilePrefab;
 }
